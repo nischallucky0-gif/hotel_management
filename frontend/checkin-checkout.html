@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Front Desk Check-In &amp; Check-Out - Grand Horizon</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">🏨</div>
+      <div>
+        <div class="brand-title">Grand Horizon</div>
+        <div class="brand-subtitle">Hotel &amp; Suites</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-label">Main Menu</li>
+      <li class="nav-item"><a href="index.html" class="nav-link"><span class="icon">📊</span> Dashboard</a></li>
+      <li class="nav-item"><a href="rooms.html" class="nav-link"><span class="icon">🛏️</span> Rooms</a></li>
+      <li class="nav-item"><a href="guests.html" class="nav-link"><span class="icon">👥</span> Guests</a></li>
+      <li class="nav-item"><a href="reservations.html" class="nav-link"><span class="icon">📅</span> Reservations</a></li>
+      <li class="nav-item"><a href="checkin-checkout.html" class="nav-link active"><span class="icon">🛎️</span> Front Desk</a></li>
+      
+      <li class="nav-label">Finance &amp; Analytics</li>
+      <li class="nav-item"><a href="billing.html" class="nav-link"><span class="icon">💳</span> Billing &amp; Invoices</a></li>
+      <li class="nav-item"><a href="reports.html" class="nav-link"><span class="icon">📈</span> Reports</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <span>System Status</span>
+      <span class="badge badge-available">● Online</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Front Desk Operations</h1>
+        <p>Real-time guest arrivals, departures, room keys, and active in-house stays</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary" onclick="loadFrontDeskData()">🔄 Refresh Front Desk</button>
+      </div>
+    </header>
+
+    <div class="content-body">
+      
+      <!-- Operations Grid: Today's Arrivals vs Departures -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;">
+        
+        <!-- Expected Arrivals Today -->
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header" style="background-color: #f0fdf4;">
+            <div class="card-title" style="color: #166534;">
+              <span>📥</span> Today's Expected Arrivals
+            </div>
+            <span class="badge badge-confirmed" id="desk-arrivals-count">0</span>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Ref</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Nights</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="desk-arrivals-tbody">
+                  <tr><td colspan="5" class="empty-state"><div class="loading-spinner"></div> Checking arrivals...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expected Departures Today -->
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header" style="background-color: #fef2f2;">
+            <div class="card-title" style="color: #991b1b;">
+              <span>📤</span> Today's Expected Departures
+            </div>
+            <span class="badge badge-occupied" id="desk-departures-count">0</span>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Ref</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Total</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="desk-departures-tbody">
+                  <tr><td colspan="5" class="empty-state"><div class="loading-spinner"></div> Checking departures...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active In-House Guests Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>🏨</span> All Currently In-House Guests (Checked-In)
+          </div>
+          <span class="badge badge-occupied" id="in-house-count">0 In-House</span>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Booking Reference</th>
+                  <th>Guest Name</th>
+                  <th>Room</th>
+                  <th>Check-In Date</th>
+                  <th>Scheduled Check-Out</th>
+                  <th>Billing Status</th>
+                  <th style="text-align: right;">Reception Action</th>
+                </tr>
+              </thead>
+              <tbody id="in-house-tbody">
+                <tr><td colspan="7" class="empty-state"><div class="loading-spinner"></div> Loading active stays...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/checkin-checkout.js"></script>
+</body>
+</html>
+

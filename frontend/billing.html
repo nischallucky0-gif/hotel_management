@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing &amp; Payments - Grand Horizon Hotel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">🏨</div>
+      <div>
+        <div class="brand-title">Grand Horizon</div>
+        <div class="brand-subtitle">Hotel &amp; Suites</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-label">Main Menu</li>
+      <li class="nav-item"><a href="index.html" class="nav-link"><span class="icon">📊</span> Dashboard</a></li>
+      <li class="nav-item"><a href="rooms.html" class="nav-link"><span class="icon">🛏️</span> Rooms</a></li>
+      <li class="nav-item"><a href="guests.html" class="nav-link"><span class="icon">👥</span> Guests</a></li>
+      <li class="nav-item"><a href="reservations.html" class="nav-link"><span class="icon">📅</span> Reservations</a></li>
+      <li class="nav-item"><a href="checkin-checkout.html" class="nav-link"><span class="icon">🛎️</span> Front Desk</a></li>
+      
+      <li class="nav-label">Finance &amp; Analytics</li>
+      <li class="nav-item"><a href="billing.html" class="nav-link active"><span class="icon">💳</span> Billing &amp; Invoices</a></li>
+      <li class="nav-item"><a href="reports.html" class="nav-link"><span class="icon">📈</span> Reports</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <span>System Status</span>
+      <span class="badge badge-available">● Online</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Billing, Folios &amp; Payment Settlements</h1>
+        <p>Guest accounts, incidental services, simulated payment receipts, and printable tax invoices</p>
+      </div>
+      <div class="topbar-actions">
+        <span class="badge" style="background:#fef3c7; color:#92400e; padding: 6px 12px; font-size: 13px;">
+          💳 Payments Mode: Simulated Hotel Transactions
+        </span>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Search & Filters Toolbar -->
+      <div class="card" style="padding: 16px; margin-bottom: 20px;">
+        <div class="toolbar" style="margin-bottom: 0;">
+          <div class="search-filters">
+            <div class="search-input-wrapper" style="min-width: 280px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="bill-search-input" placeholder="Search invoice #, booking ref, or guest name..." oninput="handleBillFilter()">
+            </div>
+            
+            <select id="bill-status-filter" class="select-filter" onchange="handleBillFilter()">
+              <option value="">All Payment Statuses</option>
+              <option value="UNPAID">Unpaid</option>
+              <option value="PARTIALLY_PAID">Partially Paid</option>
+              <option value="PAID">Paid</option>
+            </select>
+
+            <button class="btn btn-secondary btn-sm" onclick="resetBillFilters()">Reset</button>
+          </div>
+          <div>
+            <span style="font-size: 13px; color: var(--text-muted);">Total Bills: <strong id="bills-count">0</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bills Table Card -->
+      <div class="card">
+        <div class="card-body" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Booking Ref</th>
+                  <th>Guest Details</th>
+                  <th>Room</th>
+                  <th>Room Charges</th>
+                  <th>Extras</th>
+                  <th>Total Amount</th>
+                  <th>Paid</th>
+                  <th>Balance Due</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bills-table-tbody">
+                <tr><td colspan="11" class="empty-state"><div class="loading-spinner"></div> Loading guest bills...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Additional Charge Modal -->
+  <div id="charge-modal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Post Incidental / Room Charge</h3>
+        <button class="modal-close" onclick="closeChargeModal()">&times;</button>
+      </div>
+      <form id="charge-form" onsubmit="saveAdditionalCharge(event)">
+        <div class="modal-body">
+          <input type="hidden" id="charge-bill-id">
+          <div id="charge-bill-meta" style="margin-bottom: 16px; padding: 10px 14px; background: #eff6ff; border-radius: var(--radius-sm); font-size: 13px; color: #1e40af;"></div>
+
+          <div class="form-group">
+            <label class="form-label" for="charge-category">Service Department <span class="required">*</span></label>
+            <select id="charge-category" class="form-control" required>
+              <option value="Food & Beverage">Food &amp; Beverage</option>
+              <option value="Room Service">Room Service</option>
+              <option value="Laundry">Laundry &amp; Dry Cleaning</option>
+              <option value="Spa & Wellness">Spa &amp; Wellness</option>
+              <option value="Airport Shuttle">Airport Shuttle</option>
+              <option value="Minibar">Minibar</option>
+              <option value="Other">Other Services</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="charge-amount">Amount ($) <span class="required">*</span></label>
+            <input type="number" id="charge-amount" class="form-control" step="0.01" min="0.01" placeholder="25.00" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="charge-desc">Description / Item Details</label>
+            <input type="text" id="charge-desc" class="form-control" placeholder="e.g. Club Sandwich and Cappuccino">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeChargeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-charge">Post Charge to Folio</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Record Payment Modal -->
+  <div id="payment-modal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Record Payment Settlement</h3>
+        <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+      </div>
+      <form id="payment-form" onsubmit="savePayment(event)">
+        <div class="modal-body">
+          <input type="hidden" id="payment-bill-id">
+          <div id="payment-bill-meta" style="margin-bottom: 16px; padding: 10px 14px; background: #ecfdf5; border-radius: var(--radius-sm); font-size: 13px; color: #065f46;"></div>
+
+          <div class="form-group">
+            <label class="form-label" for="payment-method">Payment Method <span class="required">*</span></label>
+            <select id="payment-method" class="form-control" required>
+              <option value="CASH">Cash Settlement</option>
+              <option value="CARD">Credit / Debit Card (Simulated)</option>
+              <option value="UPI">UPI / Digital QR (Simulated)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="payment-amount">Payment Amount ($) <span class="required">*</span></label>
+            <input type="number" id="payment-amount" class="form-control" step="0.01" min="0.01" required>
+            <div class="form-help" id="payment-balance-hint">Max payable: remaining folio balance</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="payment-notes">Transaction Notes</label>
+            <input type="text" id="payment-notes" class="form-control" placeholder="e.g. Front desk card terminal #2">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closePaymentModal()">Cancel</button>
+          <button type="submit" class="btn btn-success" id="btn-save-payment">Record Payment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Printable Invoice Modal -->
+  <div id="invoice-modal" class="modal-backdrop">
+    <div class="modal modal-lg">
+      <div class="modal-header no-print">
+        <h3 class="modal-title">Hotel Folio &amp; Invoice</h3>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Invoice</button>
+          <button class="modal-close" onclick="closeInvoiceModal()">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body" id="invoice-print-content">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="modal-footer no-print">
+        <button type="button" class="btn btn-secondary" onclick="closeInvoiceModal()">Close</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print / Save PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/billing.js"></script>
+</body>
+</html>
+

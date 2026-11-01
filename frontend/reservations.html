@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservations - Grand Horizon Hotel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">🏨</div>
+      <div>
+        <div class="brand-title">Grand Horizon</div>
+        <div class="brand-subtitle">Hotel &amp; Suites</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-label">Main Menu</li>
+      <li class="nav-item"><a href="index.html" class="nav-link"><span class="icon">📊</span> Dashboard</a></li>
+      <li class="nav-item"><a href="rooms.html" class="nav-link"><span class="icon">🛏️</span> Rooms</a></li>
+      <li class="nav-item"><a href="guests.html" class="nav-link"><span class="icon">👥</span> Guests</a></li>
+      <li class="nav-item"><a href="reservations.html" class="nav-link active"><span class="icon">📅</span> Reservations</a></li>
+      <li class="nav-item"><a href="checkin-checkout.html" class="nav-link"><span class="icon">🛎️</span> Front Desk</a></li>
+      
+      <li class="nav-label">Finance &amp; Analytics</li>
+      <li class="nav-item"><a href="billing.html" class="nav-link"><span class="icon">💳</span> Billing &amp; Invoices</a></li>
+      <li class="nav-item"><a href="reports.html" class="nav-link"><span class="icon">📈</span> Reports</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <span>System Status</span>
+      <span class="badge badge-available">● Online</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Reservation Management</h1>
+        <p>Book stays, manage check-in dates, calculate room charges, and track bookings</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" onclick="openReservationModal()">+ Create Reservation</button>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Search & Filters Toolbar -->
+      <div class="card" style="padding: 16px; margin-bottom: 20px;">
+        <div class="toolbar" style="margin-bottom: 0;">
+          <div class="search-filters">
+            <div class="search-input-wrapper" style="min-width: 260px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="res-search-input" placeholder="Search ref, guest name, or room..." oninput="handleResFilter()">
+            </div>
+            
+            <select id="res-status-filter" class="select-filter" onchange="handleResFilter()">
+              <option value="">All Statuses</option>
+              <option value="CONFIRMED">Confirmed</option>
+              <option value="CHECKED_IN">Checked In</option>
+              <option value="CHECKED_OUT">Checked Out</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 13px; color: var(--text-muted);">From:</span>
+              <input type="date" id="res-from-date" class="form-control" style="width: auto; padding: 7px 10px;" onchange="handleResFilter()">
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 13px; color: var(--text-muted);">To:</span>
+              <input type="date" id="res-to-date" class="form-control" style="width: auto; padding: 7px 10px;" onchange="handleResFilter()">
+            </div>
+
+            <button class="btn btn-secondary btn-sm" onclick="resetResFilters()">Reset</button>
+          </div>
+          <div>
+            <span style="font-size: 13px; color: var(--text-muted);">Reservations: <strong id="res-count">0</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reservations Table Card -->
+      <div class="card">
+        <div class="card-body" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Booking Reference</th>
+                  <th>Guest Name</th>
+                  <th>Room</th>
+                  <th>Dates &amp; Nights</th>
+                  <th>Guests</th>
+                  <th>Total Amount</th>
+                  <th>Status</th>
+                  <th>Bill Status</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="reservations-table-tbody">
+                <tr><td colspan="9" class="empty-state"><div class="loading-spinner"></div> Loading reservations...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Create Reservation Modal -->
+  <div id="reservation-modal" class="modal-backdrop">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="res-modal-title">New Hotel Reservation</h3>
+        <button class="modal-close" onclick="closeReservationModal()">&times;</button>
+      </div>
+      <form id="reservation-form" onsubmit="saveReservation(event)">
+        <div class="modal-body">
+          
+          <!-- Guest Selection Mode -->
+          <div style="background: #f1f5f9; padding: 12px 16px; border-radius: var(--radius-sm); margin-bottom: 16px;">
+            <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px;">Guest Selection:</div>
+            <div style="display: flex; gap: 20px;">
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="radio" name="guestMode" value="existing" checked onchange="toggleGuestMode()"> Select Existing Guest
+              </label>
+              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                <input type="radio" name="guestMode" value="new" onchange="toggleGuestMode()"> Register New Guest Inline
+              </label>
+            </div>
+          </div>
+
+          <!-- Existing Guest Dropdown -->
+          <div id="existing-guest-section" class="form-group">
+            <label class="form-label" for="res-guest-id">Select Guest <span class="required">*</span></label>
+            <select id="res-guest-id" class="form-control">
+              <option value="">-- Choose registered guest --</option>
+            </select>
+          </div>
+
+          <!-- New Guest Inline Fields -->
+          <div id="new-guest-section" style="display: none;">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="new-guest-name">Guest Full Name <span class="required">*</span></label>
+                <input type="text" id="new-guest-name" class="form-control" placeholder="e.g. Jane Smith">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="new-guest-email">Email Address <span class="required">*</span></label>
+                <input type="email" id="new-guest-email" class="form-control" placeholder="jane.smith@example.com">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="new-guest-phone">Phone Number <span class="required">*</span></label>
+                <input type="tel" id="new-guest-phone" class="form-control" placeholder="+1-555-0144">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="new-guest-idref">Govt ID / Passport</label>
+                <input type="text" id="new-guest-idref" class="form-control" placeholder="PASSPORT / ID">
+              </div>
+            </div>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid var(--border); margin: 18px 0;">
+
+          <!-- Room & Dates Selection -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="res-room-id">Select Room <span class="required">*</span></label>
+              <select id="res-room-id" class="form-control" required onchange="calculateReservationPrice()">
+                <option value="">-- Choose Room --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="res-num-guests">Number of Guests <span class="required">*</span></label>
+              <input type="number" id="res-num-guests" class="form-control" min="1" max="10" value="1" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="res-checkin">Check-In Date <span class="required">*</span></label>
+              <input type="date" id="res-checkin" class="form-control" required onchange="calculateReservationPrice()">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="res-checkout">Check-Out Date <span class="required">*</span></label>
+              <input type="date" id="res-checkout" class="form-control" required onchange="calculateReservationPrice()">
+            </div>
+          </div>
+
+          <!-- Dynamic Rate & Price Calculation Summary -->
+          <div style="background: #eff6ff; padding: 14px 18px; border-radius: var(--radius-sm); border: 1px solid #bfdbfe; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 13px; color: #1e40af; font-weight: 600;">Automated Rate Calculation:</div>
+                <div id="rate-calculation-details" style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">
+                  Select dates and room to calculate rate.
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 11px; text-transform: uppercase; color: #1e40af; font-weight: 700;">Calculated Total</div>
+                <div id="calculated-total-display" style="font-size: 22px; font-weight: 800; color: #1e40af;">$0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="res-notes">Special Requests / Notes</label>
+            <textarea id="res-notes" class="form-control" placeholder="e.g. Airport pickup requested, Extra pillows, Quiet room"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeReservationModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-res">Confirm &amp; Book Room</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/reservations.js"></script>
+</body>
+</html>
+

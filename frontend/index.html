@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Grand Horizon Hotel Management</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">🏨</div>
+      <div>
+        <div class="brand-title">Grand Horizon</div>
+        <div class="brand-subtitle">Hotel &amp; Suites</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-label">Main Menu</li>
+      <li class="nav-item"><a href="index.html" class="nav-link active"><span class="icon">📊</span> Dashboard</a></li>
+      <li class="nav-item"><a href="rooms.html" class="nav-link"><span class="icon">🛏️</span> Rooms</a></li>
+      <li class="nav-item"><a href="guests.html" class="nav-link"><span class="icon">👥</span> Guests</a></li>
+      <li class="nav-item"><a href="reservations.html" class="nav-link"><span class="icon">📅</span> Reservations</a></li>
+      <li class="nav-item"><a href="checkin-checkout.html" class="nav-link"><span class="icon">🛎️</span> Front Desk</a></li>
+      
+      <li class="nav-label">Finance &amp; Analytics</li>
+      <li class="nav-item"><a href="billing.html" class="nav-link"><span class="icon">💳</span> Billing &amp; Invoices</a></li>
+      <li class="nav-item"><a href="reports.html" class="nav-link"><span class="icon">📈</span> Reports</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <span>System Status</span>
+      <span class="badge badge-available">● Online</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Hotel Overview Dashboard</h1>
+        <p>Live operational statistics, room availability, and today's schedule</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="current-time-badge">
+          <span>🕒</span> <span id="live-clock">Loading clock...</span>
+        </div>
+        <div class="user-badge">
+          <div class="user-avatar">SR</div>
+          <span>Staff Reception</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Top Operational Metrics Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue">🛏️</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-total-rooms">—</div>
+            <div class="stat-label">Total Rooms</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-available-rooms">—</div>
+            <div class="stat-label">Available Rooms</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon purple">👤</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-occupied-rooms">—</div>
+            <div class="stat-label">Occupied Rooms</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon amber">🛠️</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-maintenance-rooms">—</div>
+            <div class="stat-label">In Maintenance</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon teal">📥</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-today-checkins">—</div>
+            <div class="stat-label">Today's Check-Ins</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon red">📤</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-today-checkouts">—</div>
+            <div class="stat-label">Today's Check-Outs</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon blue">📋</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-total-reservations">—</div>
+            <div class="stat-label">Total Bookings</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">💰</div>
+          <div class="stat-info">
+            <div class="stat-value" id="stat-total-revenue">—</div>
+            <div class="stat-label">Total Revenue Collected</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Visual Row: Occupancy Gauge & Quick Actions -->
+      <div class="dashboard-row">
+        <!-- Recent Bookings Table -->
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header">
+            <div class="card-title"><span>📋</span> Recent Reservations</div>
+            <a href="reservations.html" class="btn btn-secondary btn-sm">View All</a>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Ref</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Dates</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-reservations-tbody">
+                  <tr><td colspan="6" class="empty-state"><div class="loading-spinner"></div> Loading reservations...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Occupancy Visual Indicator -->
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header">
+            <div class="card-title"><span>📊</span> Room Occupancy</div>
+          </div>
+          <div class="card-body">
+            <div class="occupancy-gauge-box">
+              <div class="occupancy-rate-num" id="occupancy-percentage">0%</div>
+              <div style="font-size: 13px; color: var(--text-muted); font-weight: 500;">Current Hotel Capacity</div>
+              
+              <div class="occupancy-progress-bar-bg">
+                <div class="occupancy-progress-bar-fill" id="occupancy-progress-fill" style="width: 0%;"></div>
+              </div>
+
+              <div class="occupancy-legend">
+                <div class="legend-item"><span class="legend-dot" style="background: #10b981;"></span> Available: <strong id="legend-avail">0</strong></div>
+                <div class="legend-item"><span class="legend-dot" style="background: #3b82f6;"></span> Occupied: <strong id="legend-occ">0</strong></div>
+                <div class="legend-item"><span class="legend-dot" style="background: #f59e0b;"></span> Maint: <strong id="legend-maint">0</strong></div>
+              </div>
+            </div>
+
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border);">
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <a href="reservations.html" class="btn btn-primary" style="width: 100%;">+ New Reservation</a>
+              <a href="checkin-checkout.html" class="btn btn-secondary" style="width: 100%;">🛎️ Front Desk Check-in / Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule Panels: Expected Arrivals & Departures Today -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <!-- Expected Arrivals Today -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span>📥</span> Expected Arrivals Today</div>
+            <span class="badge badge-confirmed" id="badge-arrivals-count">0</span>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Ref</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="expected-arrivals-tbody">
+                  <tr><td colspan="4" class="empty-state">No arrivals expected today</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expected Departures Today -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span>📤</span> Expected Departures Today</div>
+            <span class="badge badge-occupied" id="badge-departures-count">0</span>
+          </div>
+          <div class="card-body" style="padding: 0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Ref</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="expected-departures-tbody">
+                  <tr><td colspan="4" class="empty-state">No departures expected today</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
+

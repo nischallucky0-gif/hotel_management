@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guest Directory - Grand Horizon Hotel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">🏨</div>
+      <div>
+        <div class="brand-title">Grand Horizon</div>
+        <div class="brand-subtitle">Hotel &amp; Suites</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-label">Main Menu</li>
+      <li class="nav-item"><a href="index.html" class="nav-link"><span class="icon">📊</span> Dashboard</a></li>
+      <li class="nav-item"><a href="rooms.html" class="nav-link"><span class="icon">🛏️</span> Rooms</a></li>
+      <li class="nav-item"><a href="guests.html" class="nav-link active"><span class="icon">👥</span> Guests</a></li>
+      <li class="nav-item"><a href="reservations.html" class="nav-link"><span class="icon">📅</span> Reservations</a></li>
+      <li class="nav-item"><a href="checkin-checkout.html" class="nav-link"><span class="icon">🛎️</span> Front Desk</a></li>
+      
+      <li class="nav-label">Finance &amp; Analytics</li>
+      <li class="nav-item"><a href="billing.html" class="nav-link"><span class="icon">💳</span> Billing &amp; Invoices</a></li>
+      <li class="nav-item"><a href="reports.html" class="nav-link"><span class="icon">📈</span> Reports</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <span>System Status</span>
+      <span class="badge badge-available">● Online</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Guest Directory &amp; History</h1>
+        <p>Guest profiles, contact info, government verification, and stay records</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" onclick="openGuestModal()">+ Register New Guest</button>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Search Toolbar -->
+      <div class="card" style="padding: 16px; margin-bottom: 20px;">
+        <div class="toolbar" style="margin-bottom: 0;">
+          <div class="search-filters">
+            <div class="search-input-wrapper" style="min-width: 320px;">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="guest-search-input" placeholder="Search by name, phone number, or email..." oninput="handleGuestSearch()">
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="resetGuestSearch()">Reset</button>
+          </div>
+          <div>
+            <span style="font-size: 13px; color: var(--text-muted);">Registered Guests: <strong id="guests-count">0</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guests Table Card -->
+      <div class="card">
+        <div class="card-body" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Full Name</th>
+                  <th>Contact Email</th>
+                  <th>Phone Number</th>
+                  <th>ID Reference</th>
+                  <th>Address</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="guests-table-tbody">
+                <tr><td colspan="6" class="empty-state"><div class="loading-spinner"></div> Loading guests...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Register / Edit Guest Modal -->
+  <div id="guest-modal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="guest-modal-title">Register New Guest</h3>
+        <button class="modal-close" onclick="closeGuestModal()">&times;</button>
+      </div>
+      <form id="guest-form" onsubmit="saveGuest(event)">
+        <div class="modal-body">
+          <input type="hidden" id="guest-id">
+          
+          <div class="form-group">
+            <label class="form-label" for="guest-name">Full Legal Name <span class="required">*</span></label>
+            <input type="text" id="guest-name" class="form-control" placeholder="e.g. John Doe" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="guest-email">Email Address <span class="required">*</span></label>
+              <input type="email" id="guest-email" class="form-control" placeholder="john.doe@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="guest-phone">Phone Number <span class="required">*</span></label>
+              <input type="tel" id="guest-phone" class="form-control" placeholder="+1-555-0199" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="guest-id-ref">Government ID / Passport Ref</label>
+            <input type="text" id="guest-id-ref" class="form-control" placeholder="e.g. PASSPORT-US-98124 or DL-CA-449102">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="guest-address">Residential Address</label>
+            <textarea id="guest-address" class="form-control" placeholder="Street, City, State / Country"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeGuestModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-guest">Save Guest</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Guest Booking History Modal -->
+  <div id="history-modal" class="modal-backdrop">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="history-modal-title">Guest Stay History</h3>
+        <button class="modal-close" onclick="closeHistoryModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="history-guest-info" style="margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: var(--radius-sm); border: 1px solid var(--border);"></div>
+        
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Booking Ref</th>
+                <th>Room</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-tbody">
+              <tr><td colspan="6" class="empty-state">No past or upcoming bookings found for this guest.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeHistoryModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/guests.js"></script>
+</body>
+</html>
+

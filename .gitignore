@@ -1,0 +1,33 @@
+# Maven build output
+target/
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Bytecode
+*.class
+
+# IDE & Editor settings
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Local environment configuration
+.env
+application-local.properties
+

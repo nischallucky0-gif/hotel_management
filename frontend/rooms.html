@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Management - Grand Horizon Hotel</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-icon">🏨</div>
+      <div>
+        <div class="brand-title">Grand Horizon</div>
+        <div class="brand-subtitle">Hotel &amp; Suites</div>
+      </div>
+    </div>
+    <ul class="nav-menu">
+      <li class="nav-label">Main Menu</li>
+      <li class="nav-item"><a href="index.html" class="nav-link"><span class="icon">📊</span> Dashboard</a></li>
+      <li class="nav-item"><a href="rooms.html" class="nav-link active"><span class="icon">🛏️</span> Rooms</a></li>
+      <li class="nav-item"><a href="guests.html" class="nav-link"><span class="icon">👥</span> Guests</a></li>
+      <li class="nav-item"><a href="reservations.html" class="nav-link"><span class="icon">📅</span> Reservations</a></li>
+      <li class="nav-item"><a href="checkin-checkout.html" class="nav-link"><span class="icon">🛎️</span> Front Desk</a></li>
+      
+      <li class="nav-label">Finance &amp; Analytics</li>
+      <li class="nav-item"><a href="billing.html" class="nav-link"><span class="icon">💳</span> Billing &amp; Invoices</a></li>
+      <li class="nav-item"><a href="reports.html" class="nav-link"><span class="icon">📈</span> Reports</a></li>
+    </ul>
+    <div class="sidebar-footer">
+      <span>System Status</span>
+      <span class="badge badge-available">● Online</span>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Room Management</h1>
+        <p>Configure hotel inventory, pricing, occupancy limits, and maintenance statuses</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" onclick="openRoomModal()">+ Add New Room</button>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <!-- Search & Filters Toolbar -->
+      <div class="card" style="padding: 16px; margin-bottom: 20px;">
+        <div class="toolbar" style="margin-bottom: 0;">
+          <div class="search-filters">
+            <div class="search-input-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="room-search-input" placeholder="Search room number or description..." oninput="handleRoomFilter()">
+            </div>
+            
+            <select id="room-type-filter" class="select-filter" onchange="handleRoomFilter()">
+              <option value="">All Room Types</option>
+              <option value="SINGLE">Single</option>
+              <option value="DOUBLE">Double</option>
+              <option value="DELUXE">Deluxe</option>
+              <option value="SUITE">Suite</option>
+            </select>
+
+            <select id="room-status-filter" class="select-filter" onchange="handleRoomFilter()">
+              <option value="">All Statuses</option>
+              <option value="AVAILABLE">Available</option>
+              <option value="OCCUPIED">Occupied</option>
+              <option value="MAINTENANCE">Maintenance</option>
+            </select>
+
+            <button class="btn btn-secondary btn-sm" onclick="resetRoomFilters()">Reset</button>
+          </div>
+          <div>
+            <span style="font-size: 13px; color: var(--text-muted);">Total found: <strong id="rooms-count">0</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rooms Table Card -->
+      <div class="card">
+        <div class="card-body" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Room Number</th>
+                  <th>Type</th>
+                  <th>Price / Night</th>
+                  <th>Max Occupancy</th>
+                  <th>Status</th>
+                  <th>Description</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="rooms-table-tbody">
+                <tr><td colspan="7" class="empty-state"><div class="loading-spinner"></div> Loading rooms...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add / Edit Room Modal -->
+  <div id="room-modal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="room-modal-title">Add New Room</h3>
+        <button class="modal-close" onclick="closeRoomModal()">&times;</button>
+      </div>
+      <form id="room-form" onsubmit="saveRoom(event)">
+        <div class="modal-body">
+          <input type="hidden" id="room-id">
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="room-number">Room Number <span class="required">*</span></label>
+              <input type="text" id="room-number" class="form-control" placeholder="e.g. 101, 205" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="room-type">Room Type <span class="required">*</span></label>
+              <select id="room-type" class="form-control" required>
+                <option value="SINGLE">Single</option>
+                <option value="DOUBLE">Double</option>
+                <option value="DELUXE">Deluxe</option>
+                <option value="SUITE">Suite</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="room-price">Price Per Night ($) <span class="required">*</span></label>
+              <input type="number" id="room-price" class="form-control" step="0.01" min="1" placeholder="100.00" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="room-occupancy">Max Occupancy <span class="required">*</span></label>
+              <input type="number" id="room-occupancy" class="form-control" min="1" max="10" placeholder="2" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="room-status">Initial Status</label>
+            <select id="room-status" class="form-control">
+              <option value="AVAILABLE">Available</option>
+              <option value="OCCUPIED">Occupied</option>
+              <option value="MAINTENANCE">Maintenance</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="room-desc">Description</label>
+            <textarea id="room-desc" class="form-control" placeholder="e.g. Balcony with sea view, King size bed, Free Wi-Fi"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeRoomModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-room">Save Room</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/rooms.js"></script>
+</body>
+</html>
+
